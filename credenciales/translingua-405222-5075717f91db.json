@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "translingua-405222",
+  "private_key_id": "5075717f91dbc77793fabb3639eaa95ce2d35c30",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuMuhaFrbbEeHa\nMPWpT+6ER+ABR+R1qdZrEp3By8mJxwuYbqQbaUvoUH+uQNSNWA5Ps6jNt7xHOato\ne2qC3Racb4HPGbTNpnAHSxvmZUBechf33qiK1V0Quvdf238Fl4UWxX+OB1ztls69\nlaRFkAI03IXxR8QkQzK+98iM83FSIwUCqr8LHPs0b65UInVzcR9Yr+YX308kzi6p\nma52G/4jCxRsQ3L9LxG8hbmQNrzp5xdyQuvCd81HCBMvLBeo27FE8CFdF4H8fQXL\nwGas97KCcDzkUI8VfzADH5D1xz0PPnyoP+PcjjZjpZFXx3gi4vtPRMUdEzVaA0qQ\nOSIPK06dAgMBAAECggEADP3jedqRUyfThBIcND8vnwJ8SKQrvAHJac1m4h34fzPO\n39S6nQe+n0onp5+SqqL7WELiL0uJeXdp2v4/XJiwF8UyNXeplh/YYZbesxFwmkqg\nkn4y7D3K9dU331iPseNRy/e5UmamrdqOOzH2oTCDFZ2vyKWtUXYIihkRRj/evv0Z\nTCUptAR4Y0WFILubLyOZKKuBnj2Gl8KUSpAPRz3ziM2O8ZmbBE7NTYZ1ZNJv2Z4q\nFIGRlBsw/xRmUu/3+TLOBPTS2pIzHDSnUMX32X4cFBuMYraJtVax04dKkb4hzDl5\nZYq92BEqBEciii95XsxsQudykufX0f26UeS3mP2j+QKBgQD0UQB1MouhTnV2vOV/\nSXyJtK86FrpqIOyZXxxUP1MYzzAyCK6vBxxalKw2j4d/ebLTJPaEIpplaY4m712m\n/YfVEUkLdwVY2aY8xYMZUP7eMxAojEFpM9oZhtioTAZtMPn4u6mh2VCj6IgCQJZJ\nSKQ+UUfxsO65KNBRgkZesAEbaQKBgQC2h4E1Io169gW4Cth06eXnWJKg1eMh4xkV\n9TdtBv4settog+T5EyoOYjIcFSIQpBhC9RpUPHsNNu0xqzodzUq1jD3VSRkGiKF3\nLYhdCOfyjw7ELqJGnBTthA/N6Q1Kq7//hGd3TVAHwOKelxSBG4rZrU4FzXYPzx9y\nUwsNjRy3FQKBgA/LkNkC3I4gMW3sxnWVPaz1doKt531nBYTg5kb4FRo8guQpNYnx\nTr74b63TV7JBHvORpzJhvlOiIGOaBBcAuyBmTq+kET9uStYQ+unPF7sr1/aXIr93\nb7lIw4cV6zByAyc2kr/4+cKvDOQAYvb38E5rGNiiVLy5y8YJQx1qCZhJAoGBAKpz\n9iw5nSeTshmBP0xG1ORrKVq7AoW1vsprmZveKOQ+wsBiUyRqSh7ugl8JOSuTIfj9\nTN4XMM5RWcXFYdtMyBSr515TCeS5GRfjVHGVDI3OHHsGFZKc1UpMxjmDBl+R7hVe\nfwTBFRh4fuicq5A5uTu4BKGUkkkHIhWwCSVZftRVAoGBAItM5oXpb1Tl2QW2O1Ye\no5eukM/5TAYNJstvaiUqcqYLTTUTn0SHOO1YTxwg/PH4hOQPZxoizAupp3du6/3J\nZfwsVKQ/AkCCGiJX0TIwZKoZYPUUwNj//7TezBtvU55NXr9czW6BUsBrFMel3L9j\ntZmcPwTA54LjG1LAr0FNxHGj\n-----END PRIVATE KEY-----\n",
+  "client_email": "traductorarchivos@translingua-405222.iam.gserviceaccount.com",
+  "client_id": "110820865472712933965",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/traductorarchivos%40translingua-405222.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Traductor SRT</title>
+</head>
+<body>
+    <h1>Traductor SRT</h1>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        
+        <label for="idioma_destino">Idioma de destino:</label>
+        <input type="text" name="idioma_destino" required>
+        <br>
+        <label for="archivo_srt">Selecciona un archivo SRT:</label>
+        <input type="file" name="archivo_srt" accept=".srt" required>
+        <br>
+        <button type="submit">Traducir</button>
+    </form>
+
+    {% if srt_traducido %}
+        <h2>Archivo Traducido</h2>
+        <a href="{{ srt_traducido_url }}" download>Descargar traducción</a>
+        <pre>{{ srt_traducido }}</pre>
+    {% endif %}
+</body>
+</html>
