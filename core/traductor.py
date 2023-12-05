@@ -1,7 +1,7 @@
 from google.cloud import translate_v2 as translate
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'C:/Users/Ghxst/OneDrive/Escritorio/proyecto/ProyectoIWG/credenciales/translingua-405222-5075717f91db.json' 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'C:/Users/jesus/OneDrive/Escritorio/finally/ProyectoIWG/credenciales/translingua-405222-5075717f91db.json' 
 
 def traducir(archivo_srt, idioma_destino):
     translator = translate.Client()

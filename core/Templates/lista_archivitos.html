@@ -1,0 +1,47 @@
+<!-- lista_archivos.html -->
+
+{% block content %}
+  <h2>Lista de Archivos</h2>
+
+  <form method="get" action="{% url 'lista_archivitos' %}">
+    <input type="text" name="q" placeholder="Buscar archivos" value="{{ query }}">
+    <button type="submit">Buscar</button>
+  </form>
+
+  {% if archivitos %}
+    <ul>
+      {% for archivito in archivitos %}
+        <li>
+          {{ archivito.nombre }}
+          {% if archivito.contenido and query %}
+            - <a href="{% url 'descargar_archivito' archivito.id %}">Descargar</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No se encontraron archivos.</p>
+  {% endif %}
+
+  <h2>Subir Archivo</h2>
+
+  <form method="post" action="{% url 'subir_archivito' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    {# Mantener el campo de cambio de nombre y el campo de entrada de archivo #}
+    {{ form.nombre }}
+    <label for="{{ form.contenido.id_for_label }}">Seleccionar Archivo:</label>
+    {{ form.contenido }}
+    
+    {# Evitar la duplicación del botón de selección de archivo #}
+    {{ form.contenido.id_for_label.tag }}
+    
+    <button type="submit">Subir Archivo</button>
+  </form>
+
+{% endblock %}
+
+
+
+
+

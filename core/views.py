@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, authenticate, login
 from .forms import CustomUserCreationForm
@@ -6,7 +6,12 @@ from django.http import HttpResponse
 from .traductor import traducir
 import os
 
+from wsgiref.util import FileWrapper
+import mimetypes
 
+from .models import Archivito
+from .forms import ArchivitoForm
+from django.db.models import Q
 
 
 # Create your views here.
@@ -64,3 +69,56 @@ def traductor(request):
     return render(request, 'core/traductor.html')
 
 
+def lista_archivitos(request):
+    query = request.GET.get('q')
+    if query:
+        archivitos = Archivito.objects.filter(Q(nombre__icontains=query) | Q(contenido__icontains=query))
+    else:
+        archivitos = Archivito.objects.all()
+    return render(request, 'lista_archivitos.html', {'archivitos': archivitos, 'query': query})
+    
+
+def subir_archivito(request):
+    if request.method == 'POST':
+        form = ArchivitoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_archivitos')
+    else:
+        form = ArchivitoForm()
+
+    return render(request, 'lista_archivitos.html', {'form': form})
+
+def descargar_archivito(request, archivito_id):  
+    archivito = get_object_or_404(Archivito, pk=archivito_id)
+    
+    response = HttpResponse(content_type=mimetypes.guess_type(archivito.nombre)[0])
+    response['Content-Disposition'] = f'attachment; filename="{archivito.nombre}"'
+
+    # Aquí se escribe el contenido del archivo en la respuesta
+    response.write(archivito.contenido)
+
+    return response
+
+    #archivito = get_object_or_404(Archivito, pk=archivito_id)
+    
+    #response = HttpResponse(content_type=mimetypes.guess_type(archivito.nombre)[0])
+    #response['Content-Disposition'] = f'attachment; filename="{archivito.nombre}"'
+
+    #with open(archivito.contenido.path, 'rb') as file:
+        #response.write(file.read())
+
+    #return response
+
+
+
+    #if request.method == 'POST':
+        #form = ArchivitoForm(request.POST)
+        #if form.is_valid():
+            #form.save()        
+            #return redirect('lista_archivitos')
+    #else:
+        #form = ArchivitoForm()       
+    #return render(request, 'lista_archivitos.html', {'form': form})
+
+    
