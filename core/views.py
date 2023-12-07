@@ -5,13 +5,15 @@ from .forms import CustomUserCreationForm
 from django.http import HttpResponse
 from .traductor import traducir
 import os
+import tempfile 
 
 from wsgiref.util import FileWrapper
 import mimetypes
 
-from .models import Archivito
+from .models import Archivito, HistorialTraducciones
 from .forms import ArchivitoForm
 from django.db.models import Q
+from django.utils import timezone
 
 
 # Create your views here.
@@ -44,6 +46,14 @@ def registrar(request):
     return render(request, 'registration/register.html', data )
 
 def traductor(request):
+    # Verificar si el usuario ha alcanzado el límite diario
+    usuario = request.user
+    hoy = timezone.now().date()
+    traducciones_hoy = HistorialTraducciones.objects.filter(usuario=usuario, fecha=hoy).first()
+    if traducciones_hoy and traducciones_hoy.cantidad_traducciones >= 7:  # Límite de 7 traducciones diarias
+        # El usuario ha alcanzado el límite, redirigir o mostrar un mensaje de error
+        return render(request, 'no_more.html')
+    
     if request.method == 'POST':
         idioma_destino = request.POST.get('idioma_destino')
         archivo_srt = request.FILES.get('archivo_srt')
@@ -52,15 +62,28 @@ def traductor(request):
             return HttpResponse("Debes proporcionar un idioma de destino y un archivo SRT.")
 
         # Guarda el archivo SRT temporalmente
-        with open('temp.srt', 'wb+') as destination:
+        #with open('temp.srt', 'wb+') as destination:
+            #for chunk in archivo_srt.chunks():
+                #destination.write(chunk)
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_filename = temp_file.name
             for chunk in archivo_srt.chunks():
-                destination.write(chunk)
+                temp_file.write(chunk)
 
         # Traduce el archivo SRT
-        srt_traducido = traducir('temp.srt', idioma_destino)
+        #srt_traducido = traducir('temp.srt', idioma_destino)
+        srt_traducido = traducir(temp_filename, idioma_destino)
 
         # Elimina el archivo temporal
-        os.remove('temp.srt')
+        #os.remove('temp.srt')
+        os.remove(temp_filename)
+
+         # Registrar la traducción en el historial
+        if traducciones_hoy:
+            traducciones_hoy.cantidad_traducciones += 1
+            traducciones_hoy.save()
+        else:
+            HistorialTraducciones.objects.create(usuario=usuario, cantidad_traducciones=1)
 
         response = HttpResponse(srt_traducido, content_type='application/srt')
         response['Content-Disposition'] = 'attachment; filename="traduccion.srt"'
