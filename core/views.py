@@ -80,12 +80,15 @@ def traductor(request):
     
         os.remove('temp.srt')
 
+        nombre_original, extension = os.path.splitext(srt_file.name)
+        nombre_traducido = f"{nombre_original}_{target_language}{extension}"
+
         if traducciones_hoy:
             traducciones_hoy.cantidad_traducciones += 1
-            traducciones_hoy.archivo.save('traduccion.srt', ContentFile(srt_traducido))
+            traducciones_hoy.archivo.save(nombre_traducido, ContentFile(srt_traducido))
             traducciones_hoy.save()
         else:
-            HistorialTraducciones.objects.create(usuario=usuario, cantidad_traducciones=1, archivo=ContentFile(srt_traducido, 'traduccion.srt'))
+            HistorialTraducciones.objects.create(usuario=usuario, cantidad_traducciones=1, archivo=ContentFile(srt_traducido, nombre_traducido))
 
             
 
@@ -159,6 +162,6 @@ def guardar_archivo(request):
 
 @login_required
 def eliminar_archivo(request, archivo_id):
-    archivo = get_object_or_404(UserFile, id=archivo_id, user=request.user)
+    archivo = get_object_or_404(HistorialTraducciones, id=archivo_id, usuario=request.user)
     archivo.delete()
     return redirect('archivos_usuario')

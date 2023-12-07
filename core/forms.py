@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Archivito, UserFile
+from .models import Archivito, UserFile, HistorialTraducciones
 
 class CustomUserCreationForm(UserCreationForm):
     
@@ -24,7 +24,7 @@ class ArchivitoForm(forms.ModelForm):
 
 class UserFileForm(forms.ModelForm):
     class Meta:
-        model = UserFile
+        model = HistorialTraducciones
         fields = ['archivo']
 
 
