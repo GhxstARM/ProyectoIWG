@@ -50,7 +50,7 @@ def traductor(request):
     usuario = request.user
     hoy = timezone.now().date()
     traducciones_hoy = HistorialTraducciones.objects.filter(usuario=usuario, fecha=hoy).first()
-    if traducciones_hoy and traducciones_hoy.cantidad_traducciones >= 7:  # Límite de 7 traducciones diarias
+    if traducciones_hoy and traducciones_hoy.cantidad_traducciones >= 3:  # Límite de 7 traducciones diarias
         # El usuario ha alcanzado el límite, redirigir o mostrar un mensaje de error
         return render(request, 'no_more.html')
     
