@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Archivito
+from .models import Archivito, UserFile
 
 class CustomUserCreationForm(UserCreationForm):
     
@@ -21,4 +21,9 @@ class ArchivitoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['nombre'].required = True
 
+
+class UserFileForm(forms.ModelForm):
+    class Meta:
+        model = UserFile
+        fields = ['archivo']
 

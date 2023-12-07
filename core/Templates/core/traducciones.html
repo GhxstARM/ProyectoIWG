@@ -1,12 +1,33 @@
-{% extends 'core/base.html' %}
+<!-- archivo_usuario.html -->
+<!--{% extends 'core/base.html' %} -->
 
 {% block content %}
+  <h2>Tus Archivos Guardados</h2>
 
-<h3>subtitulos</h3>
+  <form method="post" enctype="multipart/form-data" action="{% url 'guardar_archivo' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar Archivo</button>
+  </form>
 
-<p>subtitulo 1</p>
-<p>subtitulo 2</p>
-<p>subtitulo 3</p>
-<p>subtitulo 4</p>
+  <h3>Tus archivos:</h3>
+  <ul>
+    {% for archivo in archivos %}
+      <li>
+        {{ archivo.archivo.name }} - 
+        <a href="{{ archivo.archivo.url }}" download>Descargar</a>
+        - <a href="#" onclick="eliminarArchivo('{{ archivo.id }}')">Eliminar</a>
+      </li>
+    {% endfor %}
+  </ul>
 
+  <script>
+    function eliminarArchivo(archivoId) {
+      if (confirm("¿Seguro que deseas eliminar este archivo?")) {
+        // Redirigir a la URL de eliminación
+        window.location.href = "{% url 'eliminar_archivo' 0 %}".replace("0", archivoId);
+      }
+    }
+  </script>
 {% endblock %}
+

@@ -16,7 +16,9 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import home, archivos, salir, registrar, traductor, lista_archivitos, subir_archivito, descargar_archivito
+from .views import home, archivos, salir, registrar, traductor, lista_archivitos, subir_archivito, descargar_archivito, guardar_archivo, archivos_usuario, eliminar_archivo
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', home, name='home'),
@@ -27,5 +29,10 @@ urlpatterns = [
     path('archivitos/', lista_archivitos, name='lista_archivitos'),
     path('subir_archivito/', subir_archivito, name='subir_archivito'),
     path('descargar_archivito/<int:archivito_id>/', descargar_archivito, name='descargar_archivito'),
+    path('guardar_archivo/', guardar_archivo, name='guardar_archivo'),
+    path('archivos_usuario/', archivos_usuario, name='archivos_usuario'),
+    path('eliminar_archivo/<int:archivo_id>/', eliminar_archivo, name='eliminar_archivo'),
 
     ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

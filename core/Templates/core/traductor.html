@@ -1,29 +1,35 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Traductor SRT</title>
-</head>
-<body>
-    <h1>Traductor SRT</h1>
-    
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
 
-        
-        <label for="idioma_destino">Idioma de destino:</label>
-        <input type="text" name="idioma_destino" required>
-        <br>
-        <label for="archivo_srt">Selecciona un archivo SRT:</label>
-        <input type="file" name="archivo_srt" accept=".srt" required>
-        <br>
-        <button type="submit">Traducir</button>
-    </form>
+<!-- archivo_usuario.html -->
+{% block content %}
+  <h2>Tus Archivos Guardados</h2>
 
-    {% if srt_traducido %}
-        <h2>Archivo Traducido</h2>
-        <a href="{{ srt_traducido_url }}" download>Descargar traducción</a>
-        <pre>{{ srt_traducido }}</pre>
-    {% endif %}
-</body>
-</html>
+  <form method="post" enctype="multipart/form-data" action="{% url 'guardar_archivo' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar Archivo</button>
+  </form>
+
+  <h3>Tus archivos:</h3>
+  {% if archivos %}
+    <ul>
+      {% for archivo in archivos %}
+        <li>
+          {{ archivo.archivo.name }} - 
+          <a href="{{ archivo.archivo.url }}" download>Descargar</a>
+          - <a href="#" onclick="eliminarArchivo('{{ archivo.id }}')">Eliminar</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No tienes archivos guardados.</p>
+  {% endif %}
+
+  <script>
+    function eliminarArchivo(archivoId) {
+      if (confirm("¿Seguro que deseas eliminar este archivo?")) {
+        // Redirigir a la URL de eliminación
+        window.location.href = "{% url 'eliminar_archivo' 0 %}".replace("0", archivoId);
+      }
+    }
+  </script>
+{% endblock %}

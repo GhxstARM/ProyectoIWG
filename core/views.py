@@ -10,8 +10,10 @@ from wsgiref.util import FileWrapper
 import mimetypes
 from django.core.files.base import ContentFile
 
-from .models import Archivito
-from .forms import ArchivitoForm
+from .models import Archivito, UserFile
+from .forms import ArchivitoForm, UserFileForm
+
+
 from django.db.models import Q
 
 
@@ -68,6 +70,7 @@ def traductor(request):
 
     return render(request, 'core/traductor.html')
 
+@login_required
 def lista_archivitos(request):
     query_nombre = request.GET.get('q_nombre', '')
     query_contenido = request.GET.get('q_contenido', '')
@@ -80,23 +83,8 @@ def lista_archivitos(request):
     context = {'archivitos': results, 'query_nombre': query_nombre, 'query_contenido': query_contenido}
     return render(request, 'lista_archivitos.html', context)
 
-#def lista_archivitos(request):
-    query_nombre = request.GET.get('q_nombre', '')
-    query_contenido = request.GET.get('q_contenido', '')
 
-    if query_nombre:
-        results = Archivito.objects.filter(nombre__icontains=query_nombre)
-        if query_contenido:
-            results = results.filter(contenido__icontains=query_contenido)
-    elif query_contenido:
-        results = Archivito.objects.filter(contenido__icontains=query_contenido)
-    else:
-        results = Archivito.objects.all()
-
-    context = {'archivitos': results, 'query_nombre': query_nombre, 'query_contenido': query_contenido}
-    return render(request, 'lista_archivitos.html', context)
-
-
+@login_required
 def descargar_archivito(request, archivito_id):
     archivito = get_object_or_404(Archivito, id=archivito_id)
 
@@ -104,21 +92,8 @@ def descargar_archivito(request, archivito_id):
     response['Content-Disposition'] = f'attachment; filename={archivito.nombre}'
 
     return response
-#def lista_archivitos(request):
-    query_nombre = request.GET.get('q_nombre', '')
-    query_contenido = request.GET.get('q_contenido', '')
 
-    if query_nombre or query_contenido:
-        results = Archivito.objects.filter(
-            Q(nombre__icontains=query_nombre) & Q(contenido__icontains=query_contenido)
-        )
-    else:
-        results = Archivito.objects.all()
-
-    context = {'archivitos': results, 'query_nombre': query_nombre, 'query_contenido': query_contenido}
-    return render(request, 'lista_archivitos.html', context)
-
-
+@login_required
 def subir_archivito(request):
     if request.method == 'POST':
         form = ArchivitoForm(request.POST, request.FILES)
@@ -131,21 +106,34 @@ def subir_archivito(request):
         form = ArchivitoForm()
     return render(request, 'subir_archivito.html', {'form': form})
 
-#def descargar_archivito(request, archivito_id):
-    archivito = get_object_or_404(Archivito, id=archivito_id)
 
-    response = HttpResponse(archivito.contenido, content_type='application/force-download')
-    response['Content-Disposition'] = f'attachment; filename={archivito.nombre}'
 
-    return response
-#def descargar_archivito(request, archivito_id):  
-    archivito = get_object_or_404(Archivito, pk=archivito_id)
-    
-    response = HttpResponse(content_type=mimetypes.guess_type(archivito.nombre)[0])
-    response['Content-Disposition'] = f'attachment; filename="{archivito.nombre}"'
+# Vistas relacionadas con La lista personal de cada usuario
 
-    response.write(archivito.contenido)
+@login_required
+def archivos_usuario(request):
+    # Obtén los archivos asociados al usuario actual
+    archivos = UserFile.objects.filter(user=request.user)
 
-    return response
+    context = {'archivos': archivos}
+    return render(request, 'core/traducciones.html', context)
 
-    
+@login_required
+def guardar_archivo(request):
+    if request.method == 'POST':
+        form = UserFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            nuevo_archivo = form.save(commit=False)
+            nuevo_archivo.user = request.user
+            nuevo_archivo.save()
+            return redirect('archivos_usuario')
+    else:
+        form = UserFileForm()
+    return render(request, 'core/traducciones.html', {'form': form})
+
+
+@login_required
+def eliminar_archivo(request, archivo_id):
+    archivo = get_object_or_404(UserFile, id=archivo_id, user=request.user)
+    archivo.delete()
+    return redirect('archivos_usuario')
