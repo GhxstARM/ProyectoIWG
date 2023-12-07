@@ -27,3 +27,21 @@ class UserFileForm(forms.ModelForm):
         model = UserFile
         fields = ['archivo']
 
+
+class SRTFileForm(forms.Form):
+    language_choices = [
+        ('de', 'Aleman'),
+        ('es', 'Español'),
+        ('fr', 'Frances'),
+        ('en', 'Ingles'),
+        ('nl', 'Holandés'),
+        ('it', 'Italiano'),
+        ('pt', 'Portugués'),
+        ('ht','Criollo haitiano'),
+        ('da', 'Danés'),
+        
+        
+    ]
+
+    
+    target_language = forms.ChoiceField(choices=language_choices, label='Idioma de destino', widget=forms.Select(attrs={'class': 'form-control'}))

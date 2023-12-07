@@ -1,10 +1,12 @@
-<!-- archivo_usuario.html -->
-<!--{% extends 'core/base.html' %} -->
+ archivo_usuario.html 
+{% extends 'core/base.html' %} 
+
+
 
 {% block content %}
   <h2>Tus Archivos Guardados</h2>
 
-  <form method="post" enctype="multipart/form-data" action="{% url 'guardar_archivo' %}">
+  <form method="post" enctype="multipart/form-data" action="{% url 'archivos_usuario' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Guardar Archivo</button>

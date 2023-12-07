@@ -5,13 +5,15 @@ from .forms import CustomUserCreationForm
 from django.http import HttpResponse
 from .traductor import traducir
 import os
-
+import tempfile
 from wsgiref.util import FileWrapper
 import mimetypes
 from django.core.files.base import ContentFile
 
-from .models import Archivito, UserFile
+from .models import Archivito, UserFile, HistorialTraducciones
 from .forms import ArchivitoForm, UserFileForm
+from django.utils import timezone
+
 
 
 from django.db.models import Q
@@ -46,29 +48,52 @@ def registrar(request):
 
     return render(request, 'registration/register.html', data )
 
+@login_required
 def traductor(request):
-    if request.method == 'POST':
-        idioma_destino = request.POST.get('idioma_destino')
-        archivo_srt = request.FILES.get('archivo_srt')
+    
+    usuario = request.user
+    hoy = timezone.now().date()
+    traducciones_hoy = HistorialTraducciones.objects.filter(usuario=usuario, fecha=hoy).first()
+    if traducciones_hoy and traducciones_hoy.cantidad_traducciones >= 3:  # Límite de 7 traducciones diarias
+        # El usuario ha alcanzado el límite, redirigir o mostrar un mensaje de error
+        return render(request, 'no_more.html')
 
-        if not idioma_destino or not archivo_srt:
+
+
+    if request.method == 'POST':
+        srt_file = request.FILES['srt_file']
+        target_language = request.POST.get('target_language')
+        
+        
+
+        if not target_language or not srt_file:
             return HttpResponse("Debes proporcionar un idioma de destino y un archivo SRT.")
 
         with open('temp.srt', 'wb+') as destination:
-            for chunk in archivo_srt.chunks():
+            for chunk in srt_file.chunks():
                 destination.write(chunk)
 
+
         
-        srt_traducido = traducir('temp.srt', idioma_destino)
+        srt_traducido = traducir('temp.srt', target_language)
 
     
         os.remove('temp.srt')
+
+        if traducciones_hoy:
+            traducciones_hoy.cantidad_traducciones += 1
+            traducciones_hoy.archivo.save('traduccion.srt', ContentFile(srt_traducido))
+            traducciones_hoy.save()
+        else:
+            HistorialTraducciones.objects.create(usuario=usuario, cantidad_traducciones=1, archivo=ContentFile(srt_traducido, 'traduccion.srt'))
+
+            
 
         response = HttpResponse(srt_traducido, content_type='application/srt')
         response['Content-Disposition'] = 'attachment; filename="traduccion.srt"'
         return response
 
-    return render(request, 'core/traductor.html')
+    return render(request, 'core/translate.html')
 
 @login_required
 def lista_archivitos(request):
@@ -113,7 +138,7 @@ def subir_archivito(request):
 @login_required
 def archivos_usuario(request):
     # Obtén los archivos asociados al usuario actual
-    archivos = UserFile.objects.filter(user=request.user)
+    archivos = HistorialTraducciones.objects.filter(usuario=request.user)
 
     context = {'archivos': archivos}
     return render(request, 'core/traducciones.html', context)

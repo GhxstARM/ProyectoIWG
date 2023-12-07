@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <h2>Traductor de SRT</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="target_language">Seleccione un idioma de destino</label>
+            <select name="target_language" id="target_language" required>
+                <option value="es">Español</option>
+                <option value="en">Inglés</option>
+                <option value="fr">Frances</option>
+                <option value="de">Aleman</option>
+                <option value="it">Italiano</option>
+                <option value="pt">Portugués</option>
+                <option value="ht">Criollo haitiano</option>
+                
+                <!-- Agrega más opciones según tus necesidades -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="srt_file">Seleccione un archivo SRT</label>
+            <input type="file" name="srt_file" id="srt_file" accept=".srt" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Traducir</button>
+    </form>
+{% endblock %}

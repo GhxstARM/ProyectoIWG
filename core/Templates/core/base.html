@@ -62,7 +62,7 @@
             <a class="nav-link active" aria-current="page" href={% url 'home' %}>Inicio</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href={% url 'archivos' %}>Mis subtitulos</a>
+            <a class="nav-link" href={% url 'archivos_usuario' %}>Mis subtitulos</a>
         </li>
 
         {% if request.user.is_authenticated %}
