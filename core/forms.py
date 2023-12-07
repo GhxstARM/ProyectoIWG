@@ -11,7 +11,14 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class ArchivitoForm(forms.ModelForm):
+    contenido = forms.FileField(widget=forms.FileInput)  # Modificado a FileInput
+
     class Meta:
         model = Archivito
         fields = ['nombre', 'contenido']
-    contenido = forms.FileField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['nombre'].required = True
+
+

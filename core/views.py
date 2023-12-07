@@ -8,6 +8,7 @@ import os
 
 from wsgiref.util import FileWrapper
 import mimetypes
+from django.core.files.base import ContentFile
 
 from .models import Archivito
 from .forms import ArchivitoForm
@@ -51,15 +52,14 @@ def traductor(request):
         if not idioma_destino or not archivo_srt:
             return HttpResponse("Debes proporcionar un idioma de destino y un archivo SRT.")
 
-        # Guarda el archivo SRT temporalmente
         with open('temp.srt', 'wb+') as destination:
             for chunk in archivo_srt.chunks():
                 destination.write(chunk)
 
-        # Traduce el archivo SRT
+        
         srt_traducido = traducir('temp.srt', idioma_destino)
 
-        # Elimina el archivo temporal
+    
         os.remove('temp.srt')
 
         response = HttpResponse(srt_traducido, content_type='application/srt')
@@ -68,57 +68,84 @@ def traductor(request):
 
     return render(request, 'core/traductor.html')
 
-
 def lista_archivitos(request):
-    query = request.GET.get('q')
-    if query:
-        archivitos = Archivito.objects.filter(Q(nombre__icontains=query) | Q(contenido__icontains=query))
+    query_nombre = request.GET.get('q_nombre', '')
+    query_contenido = request.GET.get('q_contenido', '')
+
+    if query_nombre or query_contenido:
+        results = Archivito.objects.filter(Q(nombre__icontains=query_nombre) & Q(contenido__icontains=query_contenido))
     else:
-        archivitos = Archivito.objects.all()
-    return render(request, 'lista_archivitos.html', {'archivitos': archivitos, 'query': query})
-    
+        results = []
+
+    context = {'archivitos': results, 'query_nombre': query_nombre, 'query_contenido': query_contenido}
+    return render(request, 'lista_archivitos.html', context)
+
+#def lista_archivitos(request):
+    query_nombre = request.GET.get('q_nombre', '')
+    query_contenido = request.GET.get('q_contenido', '')
+
+    if query_nombre:
+        results = Archivito.objects.filter(nombre__icontains=query_nombre)
+        if query_contenido:
+            results = results.filter(contenido__icontains=query_contenido)
+    elif query_contenido:
+        results = Archivito.objects.filter(contenido__icontains=query_contenido)
+    else:
+        results = Archivito.objects.all()
+
+    context = {'archivitos': results, 'query_nombre': query_nombre, 'query_contenido': query_contenido}
+    return render(request, 'lista_archivitos.html', context)
+
+
+def descargar_archivito(request, archivito_id):
+    archivito = get_object_or_404(Archivito, id=archivito_id)
+
+    response = HttpResponse(archivito.contenido, content_type='application/force-download')
+    response['Content-Disposition'] = f'attachment; filename={archivito.nombre}'
+
+    return response
+#def lista_archivitos(request):
+    query_nombre = request.GET.get('q_nombre', '')
+    query_contenido = request.GET.get('q_contenido', '')
+
+    if query_nombre or query_contenido:
+        results = Archivito.objects.filter(
+            Q(nombre__icontains=query_nombre) & Q(contenido__icontains=query_contenido)
+        )
+    else:
+        results = Archivito.objects.all()
+
+    context = {'archivitos': results, 'query_nombre': query_nombre, 'query_contenido': query_contenido}
+    return render(request, 'lista_archivitos.html', context)
+
 
 def subir_archivito(request):
     if request.method == 'POST':
         form = ArchivitoForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            nombre = form.cleaned_data['nombre']
+            contenido = form.cleaned_data['contenido'].read().decode('utf-8')
+            Archivito.objects.create(nombre=nombre, contenido=contenido)
             return redirect('lista_archivitos')
     else:
         form = ArchivitoForm()
+    return render(request, 'subir_archivito.html', {'form': form})
 
-    return render(request, 'lista_archivitos.html', {'form': form})
+#def descargar_archivito(request, archivito_id):
+    archivito = get_object_or_404(Archivito, id=archivito_id)
 
-def descargar_archivito(request, archivito_id):  
+    response = HttpResponse(archivito.contenido, content_type='application/force-download')
+    response['Content-Disposition'] = f'attachment; filename={archivito.nombre}'
+
+    return response
+#def descargar_archivito(request, archivito_id):  
     archivito = get_object_or_404(Archivito, pk=archivito_id)
     
     response = HttpResponse(content_type=mimetypes.guess_type(archivito.nombre)[0])
     response['Content-Disposition'] = f'attachment; filename="{archivito.nombre}"'
 
-    # Aquí se escribe el contenido del archivo en la respuesta
     response.write(archivito.contenido)
 
     return response
-
-    #archivito = get_object_or_404(Archivito, pk=archivito_id)
-    
-    #response = HttpResponse(content_type=mimetypes.guess_type(archivito.nombre)[0])
-    #response['Content-Disposition'] = f'attachment; filename="{archivito.nombre}"'
-
-    #with open(archivito.contenido.path, 'rb') as file:
-        #response.write(file.read())
-
-    #return response
-
-
-
-    #if request.method == 'POST':
-        #form = ArchivitoForm(request.POST)
-        #if form.is_valid():
-            #form.save()        
-            #return redirect('lista_archivitos')
-    #else:
-        #form = ArchivitoForm()       
-    #return render(request, 'lista_archivitos.html', {'form': form})
 
     
